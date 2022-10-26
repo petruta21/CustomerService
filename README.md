@@ -1,13 +1,14 @@
 # CustomerService
 This is a learning project which deals with connecting to RDBMs storage and provide REST operations. 
 
+Project needs JDK17
 ### Building the service:
 ```mvnw package```
 
 ### Creating docker image:
 ```docker build -t customer-service:0.0.1 .```
 ### (Optional) Creating database docker image
-```docker built -f Dockerfile.DB -t customer-service-db:0.0.1 .```
+```docker build -f Dockerfile.DB -t customer-service-db:0.0.1 .```
 
 ### Running the service locally
 Make sure to provide actual DB connection parameters:
