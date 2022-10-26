@@ -1,7 +1,7 @@
 CREATE TABLE CUSTOMER
-(ID bigint auto_increment,
+(ID INT,
  NAME TEXT NOT NULL,
- AGE  INT  NOT NULL)
+ AGE  INT  NOT NULL);
 
  alter table CUSTOMER
      add primary key (ID);

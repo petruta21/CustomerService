@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  postgres:
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_USER=postgres
+    image: 'customer-service-db:0.0.1'
+
+  backend:
+    build:
+      dockerfile: Dockerfile
+    environment:
+      - DB_PASSWORD=mysecretpassword
+      - DB_URL=jdbc:postgresql://postgres:5432/postgres
+      - DB_USERNAME=postgres
+    image: 'customer-service:0.0.1'
+    ports:
+      - 8080:8080
+    depends_on:
+      - postgres

@@ -1,0 +1,4 @@
+FROM library/postgres
+
+# data seed sql file, will be executed automatically on db container start
+COPY db/data.sql /docker-entrypoint-initdb.d/
