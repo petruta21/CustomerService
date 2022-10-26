@@ -1,6 +1,7 @@
 # CustomerService
 This is a learning project which deals with connecting to RDBMs storage and provide REST operations. 
 
+```mvnw package```
 
 ```docker build -t customer-service:0.0.1 .```
 
