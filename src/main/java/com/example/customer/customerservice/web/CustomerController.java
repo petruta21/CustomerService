@@ -20,10 +20,25 @@ public class CustomerController {
         return customerService.list();
     }
 
-   @GetMapping("/findByLastName")
-   public List<CustomerDTO> findByLastName(@Param("name") String name) {
-       return customerService.findByLastName(name);
-   }
+    @GetMapping("/findByLastName")
+    public List<CustomerDTO> findByLastName(@Param("name") String name) {
+        return customerService.findByLastName(name);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable("id") Long id) {
+        customerService.deleteById(id);
+    }
+
+    @PostMapping("/customer")
+    private Long saveCustomer(@RequestBody CustomerDTO customer) {
+        return customerService.saveOrUpdate(customer).getId();
+    }
+
+    @PutMapping("/customer")
+    private CustomerDTO update(@RequestBody CustomerDTO customer) {
+        return customerService.saveOrUpdate(customer);
+    }
 }
 
 
