@@ -2,6 +2,8 @@ package com.example.customer.customerservice.web;
 
 import com.example.customer.customerservice.service.CustomerService;
 import org.springframework.data.repository.query.Param;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,14 +32,24 @@ public class CustomerController {
         customerService.deleteById(id);
     }
 
+    @GetMapping("/{id}")
+    private ResponseEntity<CustomerDTO> getCustomerById(@PathVariable("id") Long id) {
+        CustomerDTO result = customerService.getCustomerById(id);
+        if (result == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); // 404
+        } else {
+            return new ResponseEntity(result, HttpStatus.OK);
+        }
+    }
+
     @PostMapping("/customer")
-    private Long saveCustomer(@RequestBody CustomerDTO customer) {
+    private Long create(@RequestBody CustomerDTO customer) {
         return customerService.saveOrUpdate(customer).getId();
     }
 
-    @PutMapping("/customer")
-    private CustomerDTO update(@RequestBody CustomerDTO customer) {
-        return customerService.saveOrUpdate(customer);
+    @PutMapping("/{id}")
+    private CustomerDTO update(@RequestBody CustomerDTO customer, @PathVariable("id") Long id) {
+        return customerService.update(customer, id);
     }
 }
 

@@ -21,8 +21,8 @@ public class CustomerService {
         return StreamSupport.stream(customerRepository.findAll().spliterator(), false).map(CustomerService::convertToCustomerDTO).collect(Collectors.toList());
     }
 
-    public Customer save(Customer customer) {
-        return customerRepository.save(customer);
+    public CustomerDTO save(CustomerDTO customerDto) {
+        return convertToCustomerDTO(customerRepository.save(convertToCustomer(customerDto)));
     }
 
     public void deleteById(Long id) {
@@ -37,12 +37,16 @@ public class CustomerService {
         return convertToCustomerDTO(customerRepository.save(convertToCustomer(customerDto)));
     }
 
-    public Customer getCustomerById(Long id) {
-        return customerRepository.findById(id).get();
+    public CustomerDTO getCustomerById(Long id) {
+        return customerRepository.findById(id).map(CustomerService::convertToCustomerDTO).orElse(null);
     }
 
-    public void update(Customer customer, Long id) {
-        customerRepository.save(customer);
+    public CustomerDTO update(CustomerDTO customerDto, Long id) {
+        Customer customer = new Customer();
+        customer.setCustomerName(customerDto.getName());
+        customer.setCustomerAge(customerDto.getAge());
+        customer.setCustomerId(id);
+        return convertToCustomerDTO(customerRepository.save(customer));
     }
 
     private Customer convertToCustomer(CustomerDTO customerDto) {
