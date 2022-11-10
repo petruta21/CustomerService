@@ -1,8 +1,6 @@
 package com.example.customer.customerservice;
 
-import com.example.customer.customerservice.persistence.CustomerRepository;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -10,7 +8,6 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -22,8 +19,8 @@ import java.nio.file.Files;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -35,9 +32,6 @@ class CustomerServiceApplicationTests {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private CustomerRepository customerRepository;
 
     @Test
     void contextLoads() {
@@ -102,6 +96,7 @@ class CustomerServiceApplicationTests {
                 .andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isBadRequest());
     }
+
     @Test
     @SqlGroup({
             @Sql(value = "classpath:sql/reset.sql", executionPhase = BEFORE_TEST_METHOD),
@@ -124,16 +119,29 @@ class CustomerServiceApplicationTests {
             @Sql(value = "classpath:sql/reset.sql", executionPhase = BEFORE_TEST_METHOD),
             @Sql(value = "classpath:sql/user-data.sql", executionPhase = BEFORE_TEST_METHOD)
     })
-    public void list_customers_thenStatus200() throws Exception {
+    public void list_customers_thenStatus200_pagination() throws Exception {
 
-        final File jsonFile = new ClassPathResource("json/customers_list.json").getFile();
-        final String listCustomers = Files.readString(jsonFile.toPath());
+        final File jsonFile = new ClassPathResource("json/customers_list_page1.json").getFile();
+        final String page1ExpectedJson = Files.readString(jsonFile.toPath());
+        final String page2ExpectedJson = Files.readString(new ClassPathResource("json/customers_list_page2.json").getFile().toPath());
 
         this.mockMvc.perform(get("/customers/list")
+                        .param("page", "0")
+                        .param("size", "3")
+                        .param("sort", "customerId")
                         .contentType(APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(content().json(listCustomers))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(content().json(page1ExpectedJson));
+
+        this.mockMvc.perform(get("/customers/list")
+                        .param("page", "1")
+                        .param("size", "3")
+                        .param("sort", "customerId")
+                        .contentType(APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().json(page2ExpectedJson));
     }
 
     @Test

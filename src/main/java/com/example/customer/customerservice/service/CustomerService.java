@@ -1,8 +1,10 @@
 package com.example.customer.customerservice.service;
 
 import com.example.customer.customerservice.persistence.Customer;
-import com.example.customer.customerservice.persistence.CustomerRepository;
+import com.example.customer.customerservice.persistence.CustomerPagingRepository;
 import com.example.customer.customerservice.web.CustomerDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +13,9 @@ import java.util.stream.StreamSupport;
 
 @Service
 public class CustomerService {
-    private final CustomerRepository customerRepository;
+    private final CustomerPagingRepository customerRepository;
 
-    public CustomerService(CustomerRepository customerRepository) {
+    public CustomerService(CustomerPagingRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
 
@@ -29,8 +31,8 @@ public class CustomerService {
         customerRepository.deleteById(id);
     }
 
-    public List<CustomerDTO> findByLastName(String name) {
-        return customerRepository.findByLastName(name).stream().map(CustomerService::convertToCustomerDTO).collect(Collectors.toList());
+    public List<CustomerDTO> findByLastName(String name, Pageable pageable) {
+        return customerRepository.findByCustomerName(name, pageable).stream().map(CustomerService::convertToCustomerDTO).collect(Collectors.toList());
     }
 
     public CustomerDTO saveOrUpdate(CustomerDTO customerDto) {
@@ -63,5 +65,10 @@ public class CustomerService {
         result.setName(c.getCustomerName());
         result.setAge(c.getCustomerAge());
         return result;
+    }
+
+    public List<CustomerDTO> listPaginated(Pageable pageable) {
+        Page<Customer> pagedResult = customerRepository.findAll(pageable);
+        return pagedResult.toList().stream().map(CustomerService::convertToCustomerDTO).collect(Collectors.toList());
     }
 }
