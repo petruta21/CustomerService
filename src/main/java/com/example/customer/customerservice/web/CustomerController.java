@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -43,12 +44,12 @@ public class CustomerController {
     }
 
     @PostMapping("/customer")
-    private Long create(@RequestBody CustomerDTO customer) {
+    private Long create( @Valid @RequestBody CustomerDTO customer) {
         return customerService.saveOrUpdate(customer).getId();
     }
 
     @PutMapping("/{id}")
-    private CustomerDTO update(@RequestBody CustomerDTO customer, @PathVariable("id") Long id) {
+    private CustomerDTO update( @Valid @RequestBody CustomerDTO customer, @PathVariable("id") Long id) {
         return customerService.update(customer, id);
     }
 }
